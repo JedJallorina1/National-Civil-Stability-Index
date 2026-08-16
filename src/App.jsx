@@ -36,6 +36,12 @@ function MapChart() {
         {({ geographies }) => {
           console.log("GEOGRAPHIES:", geographies);
 
+          /* 
+          geographies.map((geo) => (
+            geo["civilUnrestActivityCount"] = 0
+          ));
+          */ 
+
           return geographies.map((geo) => (
             <Geography
               key={geo.rsmKey}
@@ -43,6 +49,12 @@ function MapChart() {
               fill="black"
               stroke="chartreuse"
               strokeWidth={0.5}
+              style = {{
+                default: {outline: "none"},
+                hover: {outline:"none"},
+                pressed:{outline: "none"}
+                }}
+              onClick={() => {}}
             />
           ));
         }}
