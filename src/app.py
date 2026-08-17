@@ -1,6 +1,7 @@
 import requests
 import json
 from flask import Flask, jsonify
+from datetime import date, timedelta
 
 app = Flask(__name__)
 
@@ -9,6 +10,7 @@ CONFIG = {
     "username": "jrj5656@psu.edu",
     "password": "nationalCivilStabilityIndex"
 }
+currentYear = date.today().year
 
 # Function to get access token using username and password
 def get_access_token(username, password, token_url):
@@ -46,8 +48,8 @@ def get_data():
     # Option #2 (parameters as a dictionary)
     parameters = {
         "country": "United States",
-        "year": 2020,
-        "fields": "event_id_cnty|event_date|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities",
+        "year": (currentYear - 1),
+        "fields": "event_id_cnty|event_date|disorder_type|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities|notes",
     }
 
     response = requests.get(
@@ -56,7 +58,7 @@ def get_data():
         headers={"Authorization": f"Bearer {my_token}", "Content-Type": "application/json"},
     )
     if response.json()["status"] == 200:
-        print(response.json())
+        ## print(response.json())
         print(
             "Request successful"
         )

@@ -132,4 +132,5 @@
   position: fixed;
   background-color: black;
   align-items: left;
+  border: solid chartreuse 1px;
 }
