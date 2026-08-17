@@ -32,10 +32,10 @@ function MapChart() {
       <>
         <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "border-radius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{selectedState}</h3>
-            <h4>3 lawful assemblies</h4>
-            <h4>0 unlawful assemblies</h4>
-            <h4>4 violent assemblies</h4>
-            <h4>1 federal deployment</h4> 
+            <h4> lawful assemblies</h4>
+            <h4> unlawful assemblies</h4>
+            <h4> violent assemblies</h4>
+            <h4> federal deployments</h4> 
             <button onClick={() => setSelectedState(null)}>Close</button>
         </div>
       </>
