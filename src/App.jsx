@@ -30,12 +30,12 @@ function MapChart() {
       } 
       return(
       <>
-        <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "border-radius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
+        <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{selectedState}</h3>
             <h4> lawful assemblies</h4>
             <h4> unlawful assemblies</h4>
-            <h4> violent assemblies</h4>
-            <h4> federal deployments</h4> 
+            <h4> riots</h4>
+            <h4> political attacks</h4> 
             <button onClick={() => setSelectedState(null)}>Close</button>
         </div>
       </>
@@ -101,6 +101,8 @@ function CurrentDate() {
     return () => clearInterval(timer);
   }, []);
 
+  
+
   return (
     <div>
       <h3>{dateTime.toLocaleDateString()}, {dateTime.toLocaleTimeString()}</h3>
@@ -109,12 +111,55 @@ function CurrentDate() {
 }
 
 function App() 
-{
-  let lawfulAssembliesCount = 0;
-  let unlawfulAssembliesCount = 0;
-  let riotsCount = 0;
-  let federalMobilizationsCount = 0;
-  let civilStabilityRating = 0;
+{  
+  // WEIGHTS
+  const peacefulProtestWeight = 1.0;
+  const protestWithInterventionWeight = 1.5;
+  const excessiveForceWeight = 2.0;
+  const violentDemonstrationWeight = 2.75;
+  const mobViolenceWeight = 5.00;
+  const politicalViolenceWeight = 10.0;
+  const daysElapsed = 2190;
+
+
+  const[data, setData] = useState([]);
+  const[peacefulProtestCount, setPeacefulProtestCount] = useState(0);
+  const[protestWithInterventionCount, setProtestWithInterventionCount] = useState(0);
+  const[excessiveForceCount, setExcessiveForceCount] = useState(0);
+  const[violentDemonstrationCount, setViolentDemonstrationCount] = useState(0);
+  const[mobViolenceCount, setMobViolenceCount] = useState(0);
+  const[politicalViolenceCount, setPoliticalViolenceCount] = useState(0);
+  const[civilStabilityRating, setCivilStabilityRating] = useState(0)
+
+  useEffect(() => {
+    fetch('/retrieveData').then(response=>response.json()).then(data=>{
+      setData(data.data);
+      const peacefulCountTemp = data.data.filter(incident => incident.sub_event_type === "Peaceful protest").length;
+      const protestWithInterventionCountTemp = data.data.filter(incident => incident.sub_event_type === "Protest with intervention").length;
+      const excessiveForceCountTemp = data.data.filter(incident => incident.sub_event_type === "Excessive force against protesters").length;
+      const violentDemonstrationCountTemp = data.data.filter(incident => incident.sub_event_type === "Violent demonstration").length;
+      const mobViolenceCountTemp = data.data.filter(incident => incident.sub_event_type === "Mob violence").length;
+      const politicalViolenceCountTemp = data.data.filter(incident => incident.event_type === "Attack" || incident.event_type === "Remote explosive/landmine/IED" || incident.event_type === "Abduction/forced disappearance" ||incident.event_type === "Suicide bomb" || incident.event_type === "Grenade" || incident.event_type === "Sexual violence").length;
+      setPeacefulProtestCount(peacefulCountTemp);
+      setProtestWithInterventionCount(protestWithInterventionCountTemp);
+      setExcessiveForceCount(excessiveForceCountTemp);
+      setViolentDemonstrationCount(violentDemonstrationCountTemp);
+      setMobViolenceCount(mobViolenceCountTemp);
+      setPoliticalViolenceCount(politicalViolenceCountTemp);
+      const tempRating = (Math.trunc(
+        ((peacefulProtestWeight)*(peacefulCountTemp) + 
+        (protestWithInterventionWeight)*(protestWithInterventionCountTemp) + 
+        (excessiveForceWeight) * (excessiveForceCountTemp) + 
+        (violentDemonstrationWeight) *(violentDemonstrationCountTemp) + 
+        (mobViolenceWeight) * (mobViolenceCountTemp) + 
+        (politicalViolenceWeight) * (politicalViolenceCountTemp)) 
+        / (daysElapsed) * 1000 * 10) / 10
+    );
+    setCivilStabilityRating(Math.trunc((100-tempRating) * 10) / 10);
+    })
+  }, []);
+  
+  
 
   return(
   <>
@@ -138,10 +183,10 @@ function App()
       <div className = "map-container">
         <MapChart/> 
         <div className = "map-highlights-container">
-          <h3>{lawfulAssembliesCount} LAWFUL ASSEMBLIES</h3>
-          <h3>{unlawfulAssembliesCount} UNLAWFUL ASSEMBLIES</h3>
-          <h3>{riotsCount} RIOTS</h3>
-          <h3>{federalMobilizationsCount} FEDERAL MOBILIZATIONS</h3>
+          <h3>{peacefulProtestCount} LAWFUL ASSEMBLIES</h3>
+          <h3>{protestWithInterventionCount} UNLAWFUL ASSEMBLIES</h3>
+          <h3>{violentDemonstrationCount + mobViolenceCount} RIOTS</h3>
+          <h3>{politicalViolenceCount} POLITICAL ATTACKS</h3>
         </div>
       </div>
 
