@@ -48,7 +48,6 @@ def get_data():
         "country": "United States",
         "year": 2020,
         "fields": "event_id_cnty|event_date|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities",
-        "limit": 100
     }
 
     response = requests.get(

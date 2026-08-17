@@ -14,7 +14,8 @@ import './App.css';
 
 // const geoUrl = '/maps/states-10m.json';
 
-function MapChart() {
+
+function MapChart({selectedStateIncidents}) {
   const [selectedState, setSelectedState] = useState(null);
   const states = feature(
     usStates,
@@ -32,10 +33,10 @@ function MapChart() {
       <>
         <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{selectedState}</h3>
-            <h4> lawful assemblies</h4>
-            <h4> unlawful assemblies</h4>
-            <h4> riots</h4>
-            <h4> political attacks</h4> 
+            <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Peaceful protest").length ?? 0} LAWFUL ASSEMBLIES</h4>
+            <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
+            <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Violent demonstration" || incident.sub_event_type === "Mob violence").length ?? 0} RIOTS</h4>
+            <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.event_type === "Attack" || incident.event_type === "Remote explosive/landmine/IED" || incident.event_type === "Abduction/forced disappearance" ||incident.event_type === "Suicide bomb" || incident.event_type === "Grenade" || incident.event_type === "Sexual violence").length ?? 0} POLITICAL ATTACKS</h4> 
             <button onClick={() => setSelectedState(null)}>Close</button>
         </div>
       </>
@@ -112,14 +113,16 @@ function CurrentDate() {
 
 function App() 
 {  
+  const [selectedStateIncidents, setSelectedStateIncidents] = useState("California");
   // WEIGHTS
-  const peacefulProtestWeight = 0.5;
-  const protestWithInterventionWeight = 1.5;
-  const excessiveForceWeight = 2.0;
-  const violentDemonstrationWeight = 3.75;
-  const mobViolenceWeight = 5.00;
+  const peacefulProtestWeight = 0.05;
+  const protestWithInterventionWeight = 0.25;
+  const excessiveForceWeight = 0.75;
+  const violentDemonstrationWeight = 2.5;
+  const mobViolenceWeight = 5.0;
   const politicalViolenceWeight = 10.0;
   const daysElapsed = 2190;
+  const scalingFactor = 1.75;
 
   // RATING COLORS
   const [col, setCol] = useState("chartreuse");
@@ -148,28 +151,31 @@ function App()
       setViolentDemonstrationCount(violentDemonstrationCountTemp);
       setMobViolenceCount(mobViolenceCountTemp);
       setPoliticalViolenceCount(politicalViolenceCountTemp);
-      const tempRating = (Math.trunc(
-        ((peacefulProtestWeight)*(peacefulCountTemp) + 
-        (protestWithInterventionWeight)*(protestWithInterventionCountTemp) + 
-        (excessiveForceWeight) * (excessiveForceCountTemp) + 
-        (violentDemonstrationWeight) *(violentDemonstrationCountTemp) + 
-        (mobViolenceWeight) * (mobViolenceCountTemp) + 
-        (politicalViolenceWeight) * (politicalViolenceCountTemp)) 
-        / (daysElapsed) * 1000 * 10) / 10
-    );
-    if (tempRating < 30)
-    {
-      setCol("red");
-    }
-    else if (tempRating < 60)
-    {
-      setCol("yellow");
-    }
-    else
-    {
-      setCol("chartreuse");
-    }
-    setCivilStabilityRating(Math.trunc((100-tempRating) * 10) / 10);
+      const totalIncidentCount = (peacefulCountTemp + protestWithInterventionCountTemp + excessiveForceCountTemp + violentDemonstrationCountTemp + mobViolenceCountTemp + politicalViolenceCountTemp);
+      const protestFrequency =  totalIncidentCount / daysElapsed;
+      const weightedSeverity = (peacefulProtestWeight*peacefulCountTemp)+
+      (protestWithInterventionWeight*protestWithInterventionCountTemp) +
+      (excessiveForceWeight * excessiveForceCountTemp) + 
+      (violentDemonstrationWeight * violentDemonstrationCountTemp) + 
+      (mobViolenceWeight * mobViolenceCountTemp) + 
+      (politicalViolenceWeight * politicalViolenceCountTemp);
+      const averageIncidentIntensity = weightedSeverity / totalIncidentCount;
+      const stabilityRating = (100 * Math.pow(Math.E, (-1 * scalingFactor * protestFrequency * averageIncidentIntensity)));
+
+      if (stabilityRating < 33)
+      {
+        setCol("red");
+      }
+      else if (stabilityRating < 66)
+      {
+        setCol("orange");
+      }
+      else
+      {
+        setCol("chartreuse");
+      }
+
+    setCivilStabilityRating(Math.trunc(stabilityRating * 10) / 10);
 
     // SAVE DATA TO STATE INCIDENTS JSON
     fetch('/src/state-incidents.json').then(response=>response.json()).then(response2=>
@@ -177,8 +183,9 @@ function App()
       Object.keys(response2).forEach(key=>
       {
         response2[key] = data.data.filter(incident => incident.admin1 === key); 
+        console.log(response2)
       });
-      console.log(response2);
+      setSelectedStateIncidents(response2);
     })
     
   })
@@ -206,7 +213,7 @@ function App()
         <h1 style = {{color: col}}>{civilStabilityRating}</h1>
       </div>
       <div className = "map-container">
-        <MapChart/> 
+        <MapChart selectedStateIncidents = {selectedStateIncidents}/> 
         <div className = "map-highlights-container">
           <h3>{peacefulProtestCount} LAWFUL ASSEMBLIES</h3>
           <h3>{protestWithInterventionCount} UNLAWFUL ASSEMBLIES</h3>
