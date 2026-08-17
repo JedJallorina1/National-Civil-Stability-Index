@@ -25,6 +25,7 @@ function MapChart() {
       projection="geoAlbersUsa"
       width={800}
       height={500}
+      // delete this later.
       debug={true}
     >
       <Geographies
@@ -84,24 +85,28 @@ function App()
   <>
     <title>National Civil Stability Index</title>
     <div className = "header-container">
-      <h1>National Civil Stability Index</h1>
-      <CurrentDate />
-    </div>
+      <div className = "header-left">
+        <h1>National Civil Stability Index</h1>
+        <CurrentDate />
+      </div>
+      <div class = "button-group">
+        <button>Refresh</button>
+        <button>About</button>
+        <button>View all activity</button>
+      </div>
+          </div>
     <div className = "main-container">
       <div className = "score-container">
-        <h2>CUI goes here!</h2>
-        <div className = "subscore-container">
-          <h3>subscore1</h3>
-          <h3>subscore2</h3>
-          <h3>subscore3</h3>
-        </div>
+        <h2>Civil Stability Rating:</h2>
+        <h1>23</h1>
       </div>
       <div className = "map-container">
-        <MapChart/>
+        <MapChart/> 
         <div className = "map-highlights-container">
-          <h3>highlight1</h3>
-          <h3>highlight2</h3>
-          <h3>highlight3</h3>
+          <h3>12 lawful assemblies</h3>
+          <h3>2 unlawful assemblies</h3>
+          <h3>4 violent incidents</h3>
+          <h3>0 federal deployments</h3>
         </div>
       </div>
 

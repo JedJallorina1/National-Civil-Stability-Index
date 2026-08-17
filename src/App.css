@@ -2,13 +2,35 @@
 .header-container
 {
   padding: 20px;
-  display:block;
-  flex-direction: column;
+  display:flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.button-group
+{
+  margin-left: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+}
+.header-container button
+{
+  background-color: black;
+  color: chartreuse;
+  border: solid chartreuse 0.5px;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: max-content;
+  margin-left: auto;
 }
 .main-container
 {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center; 
 }
@@ -18,31 +40,42 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 30px;
 }
 .subscore-container
 {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
   gap: 20px;
 }
 .map-container
 {
   display: flex;
-  flex-direction: column;
-  width: 80%;
+  flex-direction: row;
+  height: 75%;
   align-items:center;
+  width: 90%;
 }
+
 .map-highlights-container
 {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
-  gap: 50px;
-  margin: 50px
+  gap: 10px;
+  margin: 50px;
+  border-radius: 5px;
+  border: dashed 0.1px rgba(207, 225, 255, 0.15);
+  padding: 20px;
 }
 .map-container svg
 {
   outline: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  border: dashed 0.1px rgba(207, 225, 255, 0.15);
+  padding: 20px;
 }
