@@ -79,9 +79,10 @@ function MapChart() {
                 pressed:{outline: "none", fill: "black"},
                 focused: {outline: "none", fill:"chartreuse"}
                 }}
-              onClick={() => {
+                onClick={() => {
                 setSelectedState(geo["properties"].name);
               }}
+              
             />
           ));
         }}
@@ -109,6 +110,12 @@ function CurrentDate() {
 
 function App() 
 {
+  let lawfulAssembliesCount = 0;
+  let unlawfulAssembliesCount = 0;
+  let riotsCount = 0;
+  let federalMobilizationsCount = 0;
+  let civilStabilityRating = 0;
+
   return(
   <>
     <title>NCSI</title>
@@ -126,15 +133,15 @@ function App()
     <div className = "main-container">
       <div className = "score-container">
         <h2>CIVIL STABILITY RATING:</h2>
-        <h1>23</h1>
+        <h1>{civilStabilityRating}</h1>
       </div>
       <div className = "map-container">
         <MapChart/> 
         <div className = "map-highlights-container">
-          <h3>12 LAWFUL ASSEMBLIES</h3>
-          <h3>2 UNLAWFUL ASSEMBLIES</h3>
-          <h3>3 RIOTS</h3>
-          <h3>0 FEDERAL RESPONDING</h3>
+          <h3>{lawfulAssembliesCount} LAWFUL ASSEMBLIES</h3>
+          <h3>{unlawfulAssembliesCount} UNLAWFUL ASSEMBLIES</h3>
+          <h3>{riotsCount} RIOTS</h3>
+          <h3>{federalMobilizationsCount} FEDERAL MOBILIZATIONS</h3>
         </div>
       </div>
 
