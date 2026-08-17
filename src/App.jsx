@@ -113,14 +113,16 @@ function CurrentDate() {
 function App() 
 {  
   // WEIGHTS
-  const peacefulProtestWeight = 1.0;
+  const peacefulProtestWeight = 0.5;
   const protestWithInterventionWeight = 1.5;
   const excessiveForceWeight = 2.0;
-  const violentDemonstrationWeight = 2.75;
+  const violentDemonstrationWeight = 3.75;
   const mobViolenceWeight = 5.00;
   const politicalViolenceWeight = 10.0;
   const daysElapsed = 2190;
 
+  // RATING COLORS
+  const [col, setCol] = useState("chartreuse");
 
   const[data, setData] = useState([]);
   const[peacefulProtestCount, setPeacefulProtestCount] = useState(0);
@@ -155,8 +157,31 @@ function App()
         (politicalViolenceWeight) * (politicalViolenceCountTemp)) 
         / (daysElapsed) * 1000 * 10) / 10
     );
+    if (tempRating < 30)
+    {
+      setCol("red");
+    }
+    else if (tempRating < 60)
+    {
+      setCol("yellow");
+    }
+    else
+    {
+      setCol("chartreuse");
+    }
     setCivilStabilityRating(Math.trunc((100-tempRating) * 10) / 10);
+
+    // SAVE DATA TO STATE INCIDENTS JSON
+    fetch('/src/state-incidents.json').then(response=>response.json()).then(response2=>
+    {
+      Object.keys(response2).forEach(key=>
+      {
+        response2[key] = data.data.filter(incident => incident.admin1 === key); 
+      });
+      console.log(response2);
     })
+    
+  })
   }, []);
   
   
@@ -178,7 +203,7 @@ function App()
     <div className = "main-container">
       <div className = "score-container">
         <h2>CIVIL STABILITY RATING:</h2>
-        <h1>{civilStabilityRating}</h1>
+        <h1 style = {{color: col}}>{civilStabilityRating}</h1>
       </div>
       <div className = "map-container">
         <MapChart/> 
