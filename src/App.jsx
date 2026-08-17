@@ -15,18 +15,41 @@ import './App.css';
 // const geoUrl = '/maps/states-10m.json';
 
 function MapChart() {
+  const [selectedState, setSelectedState] = useState(null);
   const states = feature(
     usStates,
     usStates.objects.states
   );
   
+  function StateInfoBox()
+    {
+      let displayStateInfoBox = "none";
+      if (selectedState != null)
+      {
+        displayStateInfoBox = "flex";
+      } 
+      return(
+      <>
+        <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "border-radius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
+            <h3 style = {{textTransform:  "uppercase"}}>{selectedState}</h3>
+            <h4>3 lawful assemblies</h4>
+            <h4>0 unlawful assemblies</h4>
+            <h4>4 violent assemblies</h4>
+            <h4>1 federal deployment</h4> 
+            <button onClick={() => setSelectedState(null)}>Close</button>
+        </div>
+      </>
+      )
+    }
+
   return (
+    <>
     <ComposableMap
       projection="geoAlbersUsa"
       width={800}
       height={500}
       // delete this later.
-      debug={true}
+      // debug = {true}
     >
       <Geographies
         geography = {states}
@@ -52,15 +75,20 @@ function MapChart() {
               strokeWidth={0.5}
               style = {{
                 default: {outline: "none"},
-                hover: {outline:"none"},
-                pressed:{outline: "none"}
+                hover: {outline:"none", fill: "chartreuse"},
+                pressed:{outline: "none", fill: "black"},
+                focused: {outline: "none", fill:"chartreuse"}
                 }}
-              onClick={() => {}}
+              onClick={() => {
+                setSelectedState(geo["properties"].name);
+              }}
             />
           ));
         }}
       </Geographies>
     </ComposableMap>
+    <StateInfoBox />
+    </>
   );
 }
 
@@ -83,13 +111,13 @@ function App()
 {
   return(
   <>
-    <title>National Civil Stability Index</title>
+    <title>NCSI</title>
     <div className = "header-container">
       <div className = "header-left">
-        <h1>National Civil Stability Index</h1>
+        <h1>NATIONAL CIVIL STABILITY INDEX</h1>
         <CurrentDate />
       </div>
-      <div class = "button-group">
+      <div className = "button-group">
         <button>Refresh</button>
         <button>About</button>
         <button>View all activity</button>
@@ -97,16 +125,16 @@ function App()
           </div>
     <div className = "main-container">
       <div className = "score-container">
-        <h2>Civil Stability Rating:</h2>
+        <h2>CIVIL STABILITY RATING:</h2>
         <h1>23</h1>
       </div>
       <div className = "map-container">
         <MapChart/> 
         <div className = "map-highlights-container">
-          <h3>12 lawful assemblies</h3>
-          <h3>2 unlawful assemblies</h3>
-          <h3>4 violent incidents</h3>
-          <h3>0 federal deployments</h3>
+          <h3>12 LAWFUL ASSEMBLIES</h3>
+          <h3>2 UNLAWFUL ASSEMBLIES</h3>
+          <h3>3 RIOTS</h3>
+          <h3>0 FEDERAL RESPONDING</h3>
         </div>
       </div>
 
