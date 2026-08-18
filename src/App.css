@@ -26,6 +26,20 @@
   padding-right: 30px;
   width: max-content;
   margin-left: auto;
+  cursor: pointer;
+}
+.header-container button:hover
+{
+  background-color: chartreuse;
+  color: chartreuse;
+  border: solid chartreuse 0.5px;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: max-content;
+  margin-left: auto;
+  cursor: pointer;
 }
 .map-container button
 {

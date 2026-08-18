@@ -38,7 +38,7 @@ function MapChart({selectedStateIncidents, mapData}) {
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Peaceful protest").length ?? 0} LAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Violent demonstration" || incident.sub_event_type === "Mob violence").length ?? 0} RIOTS</h4>
-            <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.disorder_type === "Political violence").length ?? 0} POLITICAL ATTACKS</h4> 
+            <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.disorder_type === "Political violence").length ?? 0} POLITICAL VIOLENCE INCIDENTS</h4> 
             <button onClick={() => setSelectedState(null)}>Close</button>
         </div>
       </>
@@ -62,7 +62,7 @@ function MapChart({selectedStateIncidents, mapData}) {
         }}
       >
         {({ geographies }) => {
-          console.log("GEOGRAPHIES:", geographies);
+          // console.log("GEOGRAPHIES:", geographies);
 
           /* 
           geographies.map((geo) => (
@@ -93,27 +93,27 @@ function MapChart({selectedStateIncidents, mapData}) {
       </Geographies>
       
       {mapData.map(incident => {
-        let dotColor = "chartreuse"
+        let dotColor = "red"
         let radius = 1
         let stroke = 2;
         if (incident.sub_event_type == "Peaceful protest")
         {
           // console.log(incident.disorder_type);
-          dotColor = ("lightCoral");
+          dotColor = ("red");
           radius = 1
           stroke = 2;
         }
         else if (incident.sub_event_type == "Protest with intervention" || incident.sub_event_type == "Excessive force against protesters")
         {
           // console.log(incident.disorder_type);
-          dotColor = "mediumVioletRed";
+          dotColor = "darkRed";
           radius = 2;
           stroke = 4;
         }
         else if (incident.sub_event_type == "Violent demonstration" || incident.sub_event_type == "Mob violence" ||
           incident.sub_event_type == "Looting/property destruction" || incident.sub_event_type == "Armed clash")
         {
-          console.log(incident.sub_event_type);
+          // console.log(incident.sub_event_type);
           dotColor = ("maroon");
           radius = 3;
           stroke = 6;
@@ -154,18 +154,18 @@ function App()
   const protestWithInterventionWeight = 0.2;
   const excessiveForceWeight = 0.5;
   const violentDemonstrationWeight = 1.0;
-  const mobViolenceWeight = 2.0;
+  const mobViolenceWeight = 1.75;
 
   const sexualViolenceWeight = 1.0;
-  const arrestsWeight = 1.0;
-  const lootingWeight = 2.0;
+  const arrestsWeight = 0.5;
+  const lootingWeight = 1.5;
   const attackWeight = 1.5;
 
   const politicalViolenceWeight = 5.0;
 
 
   const daysElapsed = 365;
-  const scalingFactor = 1.5;
+  const scalingFactor = 1.0;
 
   // RATING COLORS
   const [col, setCol] = useState("chartreuse");
@@ -230,6 +230,14 @@ function App()
       const averageIncidentIntensity = weightedSeverity / totalIncidentCount;
       const stabilityRating = (100 * Math.pow(Math.E, (-1 * scalingFactor * protestFrequency * averageIncidentIntensity)));
 
+      let previousRating = 0;
+
+      const params = {currentScore: stabilityRating};
+      const queryString = new URLSearchParams(params).toString();
+      const url = `/initiateCookies?${queryString}`;
+
+      
+
       if (stabilityRating < 33)
       {
         setCol("red");
@@ -240,10 +248,18 @@ function App()
       }
       else
       {
-        setCol("chartreuse");
+        setCol("green");
       }
 
     setCivilStabilityRating(Math.trunc(stabilityRating * 10) / 10);
+    fetch(url).then(response=>response.json()).then(data=>
+      {
+        previousRating = Number(data["previousValue"]);
+        console.log(previousRating)
+        const changeTextField = document.getElementById("changeSinceLast");
+        let diff = Math.trunc(10 * (stabilityRating - previousRating)) / 10;
+        changeTextField.textContent = String(diff) + " change since last";
+      })
 
     // SAVE DATA TO STATE INCIDENTS JSON
     fetch('/src/state-incidents.json').then(response=>response.json()).then(response2=>
@@ -270,7 +286,7 @@ function App()
         <CurrentDate />
       </div>
       <div className = "button-group">
-        <button>Refresh</button>
+        <button onClick={()=>window.location.reload()}>Refresh</button>
         <button>About</button>
         <button>View all activity</button>
       </div>
@@ -279,6 +295,7 @@ function App()
       <div className = "score-container">
         <h2>CIVIL STABILITY RATING:</h2>
         <h1 style = {{color: col}}>{civilStabilityRating}</h1>
+        <h3 id = "changeSinceLast">... change since last</h3>
       </div>
       <div className = "map-container">
         <MapChart selectedStateIncidents = {selectedStateIncidents} mapData = {data}/> 
@@ -286,7 +303,7 @@ function App()
           <h3>{peacefulProtestCount} LAWFUL ASSEMBLIES</h3>
           <h3>{protestWithInterventionCount} UNLAWFUL ASSEMBLIES</h3>
           <h3>{(violentDemonstrationCount + lootingCount) +  mobViolenceCount} RIOTS</h3>
-          <h3>{politicalViolenceCount} POLITICAL ATTACKS</h3>
+          <h3>{politicalViolenceCount} POLITICAL VIOLENCE INCIDENTS</h3>
         </div>
       </div>
 

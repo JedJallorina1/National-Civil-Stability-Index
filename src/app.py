@@ -1,7 +1,8 @@
 import requests
 import json
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from datetime import date, timedelta
+import sqlite3
 
 app = Flask(__name__)
 
@@ -35,8 +36,7 @@ def get_access_token(username, password, token_url):
         raise Exception(f"Failed to get access token: {response.status_code} {response.text}")
 
 @app.route("/retrieveData", methods = ["GET"])
-def get_data():
-    print("cp1") 
+def get_data(): 
     # Get an access token
     my_token = get_access_token(
         username = CONFIG["username"],
@@ -67,5 +67,20 @@ def get_data():
         print("Data request failed.")
         return response.json()
 
+@app.route("/initiateCookies", methods = ["GET", "POST"])
+def initiateCookies():
+    currentScore = request.values.get('currentScore', 0, type = float)
+    connection = sqlite3.connect('cookies.db')
+    cursor = connection.cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS cookies(id INTEGER PRIMARY KEY AUTOINCREMENT, score REAL)""")
+    cursor.execute("""SELECT * FROM cookies""")
+    previousValue = cursor.fetchone()
+    cursor.execute("DELETE FROM cookies")
+    cursor.execute("INSERT INTO cookies (score) VALUES (?)", (currentScore,))
+    connection.commit()
+    connection.close()
+    if (previousValue == None):
+        return {"previousValue": None}
+    return {"previousValue": previousValue[1]}
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, use_reloader = False, port=5000)
