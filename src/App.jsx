@@ -308,7 +308,7 @@ function App()
         <CurrentDate />
       </div>
       <div className = "button-group">
-        <button onClick={()=>window.location.reload()}>Refresh</button>
+        <p>Choose a year: </p>
         <DropdownMenu setYear = {setYear}/>
         <button onClick={()=> console.log(year)}>About</button>
         

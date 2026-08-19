@@ -28,6 +28,12 @@
   margin-left: auto;
   cursor: pointer;
 }
+.header-container p
+{
+  padding: 0px;
+  margin-top: 0px;
+  padding-top: 5px;
+}
 .header-container button:hover
 {
   background-color: chartreuse;
