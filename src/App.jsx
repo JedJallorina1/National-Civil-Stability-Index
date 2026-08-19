@@ -16,15 +16,29 @@ import './App.css';
 // const geoUrl = '/maps/states-10m.json';
 
 
-function MapChart({selectedStateIncidents, mapData}) {
+function DropdownMenu({setYear})
+{   
+  const startYear = 2020;
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(({length:currentYear - startYear + 1}), (_, i) => startYear + i);
+  return(
+  <select name="select" defaultValue={"2025"} onChange={(event)=>setYear(Number(event.target.value))}>
+    {years.map((item, index) => (
+      <option key = {index}>{item}</option>
+    ))}
+</select>)
+}
+
+function MapChart({selectedStateIncidents, mapData, year}) {
   const [selectedState, setSelectedState] = useState(null);
   
   const states = feature(
     usStates,
     usStates.objects.states
   );
+
   
-  function StateInfoBox()
+  function StateInfoBox(year)
     {
       let displayStateInfoBox = "none";
       if (selectedState != null)
@@ -34,7 +48,7 @@ function MapChart({selectedStateIncidents, mapData}) {
       return(
       <>
         <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
-            <h3 style = {{textTransform:  "uppercase"}}>{selectedState}</h3>
+            <h3 style = {{textTransform:  "uppercase"}}>{selectedState} {Number(year["year"])}</h3>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Peaceful protest").length ?? 0} LAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Violent demonstration" || incident.sub_event_type === "Mob violence").length ?? 0} RIOTS</h4>
@@ -124,7 +138,7 @@ function MapChart({selectedStateIncidents, mapData}) {
         </Marker>);
       })}
     </ComposableMap>
-    <StateInfoBox />
+    <StateInfoBox year = {year}/>
     </>
   );
 }
@@ -148,6 +162,7 @@ function CurrentDate() {
 
 function App() 
 {  
+  const [year, setYear] = useState(2025);
   const [selectedStateIncidents, setSelectedStateIncidents] = useState("California");
   // WEIGHTS
   const peacefulProtestWeight = 0.01;
@@ -186,8 +201,15 @@ function App()
   const[civilStabilityRating, setCivilStabilityRating] = useState(0)
   const[fatalities, setFatalities] = useState(0);
 
-  useEffect(() => {
-    fetch('/retrieveData').then(response=>response.json()).then(data=>{
+  
+  function renderPage(year)
+  {
+    let params = {currentYear: year};
+    let queryString = new URLSearchParams(params).toString();
+    let url = `/retrieveData?${queryString}`;
+
+    fetch(url).then(response=>response.json()).then(data=>{
+      console.log(data.data);
       setData(data.data);
       const peacefulCountTemp = data.data.filter(incident => incident.sub_event_type === "Peaceful protest").length;
       const protestWithInterventionCountTemp = data.data.filter(incident => incident.sub_event_type === "Protest with intervention").length;
@@ -232,9 +254,9 @@ function App()
 
       let previousRating = 0;
 
-      const params = {currentScore: stabilityRating};
-      const queryString = new URLSearchParams(params).toString();
-      const url = `/initiateCookies?${queryString}`;
+      const params1 = {currentScore: stabilityRating};
+      const queryString1 = new URLSearchParams(params1).toString();
+      const url1 = `/initiateCookies?${queryString1}`;
 
       
 
@@ -252,7 +274,7 @@ function App()
       }
 
     setCivilStabilityRating(Math.trunc(stabilityRating * 10) / 10);
-    fetch(url).then(response=>response.json()).then(data=>
+    fetch(url1).then(response=>response.json()).then(data=>
       {
         previousRating = Number(data["previousValue"]);
         console.log(previousRating)
@@ -273,10 +295,10 @@ function App()
     })
     
   })
-  }, []);
-  
-  
+  }
 
+  useEffect(() => {renderPage(year)}, [year]);
+  
   return(
   <>
     <title>NCSI</title>
@@ -287,8 +309,9 @@ function App()
       </div>
       <div className = "button-group">
         <button onClick={()=>window.location.reload()}>Refresh</button>
-        <button>About</button>
-        <button>View all activity</button>
+        <DropdownMenu setYear = {setYear}/>
+        <button onClick={()=> console.log(year)}>About</button>
+        
       </div>
           </div>
     <div className = "main-container">
@@ -298,7 +321,7 @@ function App()
         <h3 id = "changeSinceLast">... change since last</h3>
       </div>
       <div className = "map-container">
-        <MapChart selectedStateIncidents = {selectedStateIncidents} mapData = {data}/> 
+        <MapChart selectedStateIncidents = {selectedStateIncidents} mapData = {data} year = {year}/> 
         <div className = "map-highlights-container">
           <h3>{peacefulProtestCount} LAWFUL ASSEMBLIES</h3>
           <h3>{protestWithInterventionCount} UNLAWFUL ASSEMBLIES</h3>

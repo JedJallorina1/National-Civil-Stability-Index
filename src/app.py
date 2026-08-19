@@ -36,7 +36,9 @@ def get_access_token(username, password, token_url):
         raise Exception(f"Failed to get access token: {response.status_code} {response.text}")
 
 @app.route("/retrieveData", methods = ["GET"])
-def get_data(): 
+def get_data():
+    year = request.args.get("currentYear", type=int)
+    print(f"Year: ", type(year)) 
     # Get an access token
     my_token = get_access_token(
         username = CONFIG["username"],
@@ -44,11 +46,12 @@ def get_data():
         token_url="https://acleddata.com/oauth/token",
     )
 
+    
 
     # Option #2 (parameters as a dictionary)
     parameters = {
         "country": "United States",
-        "year": (currentYear - 1),
+        "year": int(year),
         "fields": "event_id_cnty|event_date|disorder_type|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities|notes",
     }
 
@@ -59,9 +62,7 @@ def get_data():
     )
     if response.json()["status"] == 200:
         ## print(response.json())
-        print(
-            "Request successful"
-        )
+        print(len(response.json()))
         return response.json()
     else:
         print("Data request failed.")

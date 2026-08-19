@@ -15,7 +15,7 @@
   justify-content: space-between;
   gap: 20px;
 }
-.header-container button
+.header-container button, .header-container select
 {
   background-color: black;
   color: chartreuse;
