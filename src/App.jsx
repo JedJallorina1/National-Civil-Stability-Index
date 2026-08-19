@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ncsiLogo from './assets/ncsiLogo.jpg';
 import React from 'react';
+import { LineWave } from 'react-loader-spinner';
 import{
   ComposableMap,
   Geographies,
@@ -15,6 +16,30 @@ import './App.css';
 
 // const geoUrl = '/maps/states-10m.json';
 
+function LoadingSpinner({showPopup}) {
+  if (!showPopup)
+  {
+    return null;
+  }
+  
+  return (
+    <div style={{display: "flex", position: "fixed", alignSelf: "center", backgroundColor: 'black',
+      flexDirection:"column", justifyContent:"center", alignItems:"center", padding: "100px", paddingLeft: "130px",
+      paddingTop: "50px", paddingBottom:"50px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"
+    }}>
+      <h3>Loading...</h3>
+    <LineWave
+      visible={true}
+      height="100"
+      width="100"
+      ariaLabel="hourglass-loading"
+      wrapperStyle={{}} 
+      wrapperClass=""
+      colors={['chartreuse', 'black']}
+    />
+    </div>
+  )
+}
 
 function DropdownMenu({setYear})
 {   
@@ -155,13 +180,15 @@ function CurrentDate() {
 
   return (
     <div>
-      <h3>{dateTime.toLocaleDateString()}, {dateTime.toLocaleTimeString()}</h3>
+      <h3>LIVE DATA | {dateTime.toLocaleDateString()}, {dateTime.toLocaleTimeString()}</h3>
     </div>
   );
 }
 
 function App() 
 {  
+  const [showPopup, setShowPopup] = useState(true);
+  
   const [year, setYear] = useState(2025);
   const [selectedStateIncidents, setSelectedStateIncidents] = useState("California");
   // WEIGHTS
@@ -204,6 +231,7 @@ function App()
   
   function renderPage(year)
   {
+    setShowPopup(true);
     let params = {currentYear: year};
     let queryString = new URLSearchParams(params).toString();
     let url = `/retrieveData?${queryString}`;
@@ -280,9 +308,13 @@ function App()
         console.log(previousRating)
         const changeTextField = document.getElementById("changeSinceLast");
         let diff = Math.trunc(10 * (stabilityRating - previousRating)) / 10;
-        changeTextField.textContent = String(diff) + " change since last";
+        if (diff > 0)
+        {
+          changeTextField.textContent = "+" + String(diff) + " change since last";
+        }
+        else{changeTextField.textContent = String(diff) + " change since last";}
       })
-
+    
     // SAVE DATA TO STATE INCIDENTS JSON
     fetch('/src/state-incidents.json').then(response=>response.json()).then(response2=>
     {
@@ -292,7 +324,11 @@ function App()
         // console.log(response2)
       });
       setSelectedStateIncidents(response2);
-    })
+    }).then(ans=>{
+      setShowPopup(false);
+      console.log(showPopup);
+      }
+    )
     
   })
   }
@@ -313,8 +349,9 @@ function App()
         <button onClick={()=> console.log(year)}>About</button>
         
       </div>
-          </div>
+    </div>
     <div className = "main-container">
+      <LoadingSpinner showPopup = {showPopup}/>
       <div className = "score-container">
         <h2>CIVIL STABILITY RATING:</h2>
         <h1 style = {{color: col}}>{civilStabilityRating}</h1>

@@ -154,3 +154,24 @@
   align-items: left;
   border: solid chartreuse 1px;
 }
+
+/* 1. Target all elements on the page */
+* {
+    /* Apply the animation name, duration, and timing function */
+    animation: fadeInOnLoad 0.6s ease-out;
+    
+    /* Crucial: Keeps elements at 0% state before the animation starts */
+    animation-fill-mode: backwards; 
+}
+
+/* 2. Define the load animation (e.g., Fade In + Slide Up) */
+@keyframes fadeInOnLoad {
+    0% {
+        opacity: 0;
+        
+    }
+    100% {
+        opacity: 1;
+        
+    }
+}
