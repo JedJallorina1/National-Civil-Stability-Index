@@ -342,7 +342,7 @@ function App()
       })
     
     // SAVE DATA TO STATE INCIDENTS JSON
-    fetch('/public/state-incidents.json').then(response=>response.json()).then(response2=>
+    fetch('/state-incidents.json').then(response=>response.json()).then(response2=>
     {
       Object.keys(response2).forEach(key=>
       {
