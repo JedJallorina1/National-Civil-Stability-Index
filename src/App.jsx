@@ -103,8 +103,7 @@ function MapChart({selectedStateIncidents, mapData, year}) {
           top: "30%", left: "50%",
           transform: "translate(-50%, -0%)", 
           display: displayStateInfoBox, 
-          padding: "20px", "borderRadius": "5px", 
-          border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
+          padding: "20px"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{selectedState}, {Number(year["year"])}</h3>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Peaceful protest").length ?? 0} LAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
@@ -137,8 +136,7 @@ function MapChart({selectedStateIncidents, mapData, year}) {
           boxSizing:"border-box", 
           display: displayIncidentInfoBox, 
           padding: "100px", paddingBottom:"100px", 
-          margin:"50px",paddingTop:"100px", 
-          "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
+          margin:"50px",paddingTop:"100px"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{incident.sub_event_type ?? "None"} in {incident.location ?? "null"} on {incident.event_date}</h3>
             <h4>{incident.notes ?? null}</h4> 
             <button onClick={() => setSelectedIncident(null)}>Close</button>
