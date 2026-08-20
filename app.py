@@ -5,8 +5,10 @@ from datetime import date, timedelta
 import sqlite3
 from types import MappingProxyType
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 with open("apiConfig.json", "r") as file:
     raw_data = json.load(file)
