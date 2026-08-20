@@ -260,7 +260,7 @@ function App()
     setShowPopup(true);
     let params = {currentYear: year};
     let queryString = new URLSearchParams(params).toString();
-    let url = `https://national-civil-stability-index-production.up.railway.app//retrieveData?${queryString}`;
+    let url = `https://national-civil-stability-index-production.up.railway.app/retrieveData?${queryString}`;
 
     fetch(url).then(response=>response.json()).then(data=>{
       console.log(data.data);
@@ -310,7 +310,7 @@ function App()
 
       const params1 = {currentScore: stabilityRating};
       const queryString1 = new URLSearchParams(params1).toString();
-      const url1 = `https://national-civil-stability-index-production.up.railway.app//initiateCookies?${queryString1}`;
+      const url1 = `https://national-civil-stability-index-production.up.railway.app/initiateCookies?${queryString1}`;
 
       
 
@@ -342,7 +342,7 @@ function App()
       })
     
     // SAVE DATA TO STATE INCIDENTS JSON
-    fetch('https://national-civil-stability-index-production.up.railway.app//state-incidents.json').then(response=>response.json()).then(response2=>
+    fetch('https://national-civil-stability-index-production.up.railway.app/state-incidents.json').then(response=>response.json()).then(response2=>
     {
       Object.keys(response2).forEach(key=>
       {
