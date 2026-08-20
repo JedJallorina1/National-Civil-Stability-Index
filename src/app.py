@@ -1,11 +1,12 @@
 import requests
 import json
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from datetime import date, timedelta
 import sqlite3
 from types import MappingProxyType
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../dist")
 
 with open("apiConfig.json", "r") as file:
     raw_data = json.load(file)
@@ -36,6 +37,14 @@ def get_access_token(username, password, token_url):
         return token_data['access_token']
     else:
         raise Exception(f"Failed to get access token: {response.status_code} {response.text}")
+
+@app.route("/")
+def index():
+    return send_from_directory("../dist", "index.html")
+
+@app.route("/<path:path>")
+def serve_static(path):
+    return send_from_directory("../dist", path)
 
 @app.route("/retrieveData", methods = ["GET"])
 def get_data():
