@@ -16,6 +16,32 @@ import './App.css';
 
 // const geoUrl = '/maps/states-10m.json';
 
+function AboutPopup({showAboutPopup, setShowAboutPopup})
+  {
+    if (showAboutPopup == "none")
+    {
+      return null;
+    }
+    return(
+    <div className = "about-popup" display={showAboutPopup}>
+      <h3>About NCSI</h3>
+      <p>POC: Jed Jallorina {"\n\n"}
+
+DISCLAIMER:
+This project is NOT sponsored by the U.S. government. All data is sourced from public APIs and reputable news sources. Information may be inaccurate, and is not indicative of actual public safety directives. Refer to official U.S. government sources and directives for all safety-related decisions.{"\n\n"}
+
+BLUF: 
+The NCSI is a real-time dashboard that reports on civil unrest/motivated violent incidents across the United States, leveraging public federal APIs and reputable news sources to create local Incident objects. Using these incidents, a Civil Stability Rating is calculated on a weighted basis, estimating the nation’s current overall domestic stability. Incidents are displayed on a national map, which users can interact with to display more details regarding each case. 
+</p>
+    <button onClick = {()=>{setShowAboutPopup("none"); console.log(showAboutPopup)}}>Close</button>
+    </div>)
+  };
+
+function AboutButton({showAboutPopup, setShowAboutPopup})
+{
+  return <button onClick={()=>{setShowAboutPopup("flex"); console.log(showAboutPopup)}}>About</button>
+}
+
 function LoadingSpinner({showPopup}) {
   if (!showPopup)
   {
@@ -73,7 +99,7 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       return(
       <>
         <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
-            <h3 style = {{textTransform:  "uppercase"}}>{selectedState} {Number(year["year"])}</h3>
+            <h3 style = {{textTransform:  "uppercase"}}>{selectedState}, {Number(year["year"])}</h3>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Peaceful protest").length ?? 0} LAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Violent demonstration" || incident.sub_event_type === "Mob violence").length ?? 0} RIOTS</h4>
@@ -335,6 +361,8 @@ function App()
 
   useEffect(() => {renderPage(year)}, [year]);
   
+  const [showAboutPopup, setShowAboutPopup] = useState("none");
+
   return(
   <>
     <title>NCSI</title>
@@ -346,12 +374,13 @@ function App()
       <div className = "button-group">
         <p>Choose a year: </p>
         <DropdownMenu setYear = {setYear}/>
-        <button onClick={()=> console.log(year)}>About</button>
+        <AboutButton showAboutPopup = {showAboutPopup} setShowAboutPopup = {setShowAboutPopup}/>
         
       </div>
     </div>
     <div className = "main-container">
       <LoadingSpinner showPopup = {showPopup}/>
+      <AboutPopup showAboutPopup = {showAboutPopup} setShowAboutPopup={setShowAboutPopup}/>
       <div className = "score-container">
         <h2>CIVIL STABILITY RATING:</h2>
         <h1 style = {{color: col}}>{civilStabilityRating}</h1>

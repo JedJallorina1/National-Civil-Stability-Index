@@ -15,7 +15,7 @@
   justify-content: space-between;
   gap: 20px;
 }
-.header-container button, .header-container select
+.header-container button, .header-container select 
 {
   background-color: black;
   color: chartreuse;
@@ -27,6 +27,19 @@
   width: max-content;
   margin-left: auto;
   cursor: pointer;
+}
+.about-popup button
+{
+  background-color: black;
+  color: chartreuse;
+  border: solid chartreuse 0.5px;
+  border-radius: 5px;
+  height: 30px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: max-content;
+  cursor: pointer;
+  align-self: center;
 }
 .header-container p
 {
@@ -153,6 +166,18 @@
   background-color: black;
   align-items: left;
   border: solid chartreuse 1px;
+}
+.about-popup
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  background-color: black;
+  align-items: left;
+  padding: 20px;
+  border: solid chartreuse 1px;  
+  white-space: pre-line;
 }
 
 /* 1. Target all elements on the page */
