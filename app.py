@@ -42,6 +42,10 @@ def get_access_token(username, password, token_url):
 def index():
     return send_from_directory("dist", "index.html")
 
+@app.route("/test")
+def test():
+    return "Flask backend works!"
+
 @app.route("/<path:path>")
 def serve_static(path):
     return send_from_directory("dist", path)
