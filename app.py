@@ -6,7 +6,7 @@ import sqlite3
 from types import MappingProxyType
 import os
 
-app = Flask(__name__, static_folder="../dist")
+app = Flask(__name__, static_folder="dist")
 
 with open("apiConfig.json", "r") as file:
     raw_data = json.load(file)
@@ -40,11 +40,11 @@ def get_access_token(username, password, token_url):
 
 @app.route("/")
 def index():
-    return send_from_directory("../dist", "index.html")
+    return send_from_directory("dist", "index.html")
 
 @app.route("/<path:path>")
 def serve_static(path):
-    return send_from_directory("../dist", path)
+    return send_from_directory("dist", path)
 
 @app.route("/retrieveData", methods = ["GET"])
 def get_data():
@@ -95,4 +95,4 @@ def initiateCookies():
         return {"previousValue": None}
     return {"previousValue": previousValue[1]}
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader = False, port=5000)
+    app.run(debug=True, use_reloader=False, port=int(os.environ.get("PORT", 5000)))
