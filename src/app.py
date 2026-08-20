@@ -3,14 +3,16 @@ import json
 from flask import Flask, jsonify, request
 from datetime import date, timedelta
 import sqlite3
+from types import MappingProxyType
 
 app = Flask(__name__)
 
-## CHANGE EMAIL AND PASSWORD HERE! YOU NEED TO MAKE AN ACLED ACCOUNT
-CONFIG = {
-    "username": "jrj5656@psu.edu",
-    "password": "nationalCivilStabilityIndex"
-}
+with open("apiCnofig.json", "r") as file:
+    raw_data = json.load(file)
+CONFIG_RAW = raw_data
+
+CONFIG = MappingProxyType(raw_data)
+
 currentYear = date.today().year
 
 # Function to get access token using username and password
