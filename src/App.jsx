@@ -347,8 +347,7 @@ function App()
         else{changeTextField.textContent = String(diff) + " change since last";}
       })
       */
-      console.log(previousRating);
-      console.log(stabilityRating);
+      
     
     localStorage.setItem('storedRating', Number(stabilityRating));
     const changeTextField = document.getElementById("changeSinceLast");
