@@ -7,7 +7,7 @@ from types import MappingProxyType
 
 app = Flask(__name__)
 
-with open("apiCnofig.json", "r") as file:
+with open("apiConfig.json", "r") as file:
     raw_data = json.load(file)
 CONFIG_RAW = raw_data
 
