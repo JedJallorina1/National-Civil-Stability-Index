@@ -44,7 +44,16 @@ Fatalities (boolean):
 Sources:
 Confidence Score:
 
-CIVIL STABILITY SCORE CALCULATION:
-
 
 https://acleddata.com/api/acled/read
+
+
+STACK:
+
+FRONTEND
+    Frontend Hosting: Netlify
+    Frontend UI: React
+    Backend: Flask
+    APIs: ACLED, Fox/CNN (future state)
+    Backend Hosting: Railway
+BACKEND

@@ -136,6 +136,19 @@
   width: 90%;
 }
 
+.sub-map-container
+{
+  width: 100%;
+  max-width: 1200px;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+.sub-map-container p
+{
+  align-self: center;
+}
+
 .map-highlights-container
 {
   display: flex;
@@ -151,13 +164,14 @@
 {
   outline: none;
   width: 100%;
-  height: 100%;
+  height: auto;
+  box-sizing: border-box;
   border-radius: 5px;
   border: dashed 0.1px rgba(207, 225, 255, 0.15);
   padding: 20px;
 }
 
-.stateInfoBox
+.stateInfoBox, .incident-info-box
 {
   display: flex;
   flex-direction: column;

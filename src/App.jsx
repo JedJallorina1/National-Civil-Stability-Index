@@ -82,7 +82,7 @@ function DropdownMenu({setYear})
 
 function MapChart({selectedStateIncidents, mapData, year}) {
   const [selectedState, setSelectedState] = useState(null);
-  
+  const [selectedIncident, setSelectedIncident] = useState(null);
   const states = feature(
     usStates,
     usStates.objects.states
@@ -95,10 +95,16 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       if (selectedState != null)
       {
         displayStateInfoBox = "flex";
-      } 
+      }
+      
       return(
       <>
-        <div className = "stateInfoBox" style = {{transform: "translate(-50%, -10%)", display: displayStateInfoBox, padding: "20px", "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
+        <div className = "stateInfoBox" style = {{
+          top: "30%", left: "50%",
+          transform: "translate(-50%, -0%)", 
+          display: displayStateInfoBox, 
+          padding: "20px", "borderRadius": "5px", 
+          border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{selectedState}, {Number(year["year"])}</h3>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Peaceful protest").length ?? 0} LAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
@@ -109,8 +115,38 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       </>
       )
     }
-    
-
+  function IncidentInfoBox({incident})
+    {
+      console.log(incident)
+      let displayIncidentInfoBox = "none"
+      if (incident != null)
+      {
+        displayIncidentInfoBox = "flex";
+      }
+      console.log(displayIncidentInfoBox)
+      if (incident == null)
+      {
+        return null
+      }
+      return(
+        <div className = "incident-info-box" style = {{
+          width: "90vw", 
+          maxWidth: "75vw", 
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          boxSizing:"border-box", 
+          display: displayIncidentInfoBox, 
+          padding: "100px", paddingBottom:"100px", 
+          margin:"50px",paddingTop:"100px", 
+          "borderRadius": "5px", border: "dashed 0.1px rgba(207, 225, 255, 0.15)"}}>
+            <h3 style = {{textTransform:  "uppercase"}}>{incident.sub_event_type ?? "None"} in {incident.location ?? "null"} on {incident.event_date}</h3>
+            <h4>{incident.notes ?? null}</h4> 
+            <button onClick={() => setSelectedIncident(null)}>Close</button>
+        </div>
+      )
+    }
+  
+  const [hoveredIncident, setHoveredIncident] = useState(null);
   return (
     <>
     <ComposableMap
@@ -120,6 +156,7 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       // delete this later.
       // debug = {true}
     >
+      
       <Geographies
         geography = {states}
         onGeographyError={(error) => {
@@ -184,12 +221,20 @@ function MapChart({selectedStateIncidents, mapData, year}) {
           stroke = 6;
         }
         return(
-        <Marker key = {incident.event_id_cnty} coordinates = {[Number(incident.longitude), Number(incident.latitude)]}>
-        <circle r = {radius} fill = {dotColor} stroke = {dotColor} strokeWidth = {stroke}/>
+        <Marker onClick={()=>{setSelectedIncident(incident); console.log(selectedIncident)}} key = {incident.event_id_cnty} coordinates = {[Number(incident.longitude), Number(incident.latitude)]}>
+        <circle
+        r={hoveredIncident === incident.event_id_cnty ? radius + 3 : radius}
+        fill={hoveredIncident === incident.event_id_cnty ? "chartreuse": dotColor}
+        stroke={hoveredIncident === incident.event_id_cnty ? "chartreuse": dotColor}
+        strokeWidth={hoveredIncident === incident.event_id_cnty ? stroke + 2 : stroke}
+        onMouseEnter={() => setHoveredIncident(incident.event_id_cnty)}
+        onMouseLeave={() => setHoveredIncident(null)}
+      />
         </Marker>);
       })}
     </ComposableMap>
     <StateInfoBox year = {year}/>
+    <IncidentInfoBox incident = {selectedIncident}/>
     </>
   );
 }
@@ -260,8 +305,10 @@ function App()
     setShowPopup(true);
     let params = {currentYear: year};
     let queryString = new URLSearchParams(params).toString();
+    // FOR PRODUCTION
     let url = `https://national-civil-stability-index-production.up.railway.app/retrieveData?${queryString}`;
-
+    // FOR DEV
+    // let url = `/retrieveData?${queryString}`
     fetch(url).then(response=>response.json()).then(data=>{
       console.log(data.data);
       setData(data.data);
@@ -369,7 +416,7 @@ function App()
       setSelectedStateIncidents(response2);
     }).then(ans=>{
       setShowPopup(false);
-      console.log(showPopup);
+      // console.log(showPopup);
       }
     )
     
@@ -404,7 +451,10 @@ function App()
         <h3 id = "changeSinceLast">... change since last</h3>
       </div>
       <div className = "map-container">
+        <div className = "sub-map-container">
         <MapChart selectedStateIncidents = {selectedStateIncidents} mapData = {data} year = {year}/> 
+        <p>Select a state or incident to view additional details.</p>
+        </div>
         <div className = "map-highlights-container">
           <h3>{peacefulProtestCount} LAWFUL ASSEMBLIES</h3>
           <h3>{protestWithInterventionCount} UNLAWFUL ASSEMBLIES</h3>
