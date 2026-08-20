@@ -7,11 +7,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/retrieveData': {
-        target: 'http://127.0.0.1:5000',
+        target: 'https://nationalcivilstabilityindex.netlify.app/',
         changeOrigin: true
       },
       '/initiateCookies':{
-        target: 'http://127.0.0.1:5000',
+        target: 'https://nationalcivilstabilityindex.netlify.app/',
         changeOrigin: true
       }
     }
