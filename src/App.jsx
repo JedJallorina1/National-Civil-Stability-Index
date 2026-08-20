@@ -308,10 +308,15 @@ function App()
 
       let previousRating = 0;
 
+      previousRating = Number(localStorage.getItem('storedRating'))
+
+      /* 
+      let previousRating = 0;
+
       const params1 = {currentScore: stabilityRating};
       const queryString1 = new URLSearchParams(params1).toString();
       const url1 = `https://national-civil-stability-index-production.up.railway.app/initiateCookies?${queryString1}`;
-
+      */
       
 
       if (stabilityRating < 33)
@@ -328,6 +333,7 @@ function App()
       }
 
     setCivilStabilityRating(Math.trunc(stabilityRating * 10) / 10);
+    /*
     fetch(url1).then(response=>response.json()).then(data=>
       {
         previousRating = Number(data["previousValue"]);
@@ -340,7 +346,19 @@ function App()
         }
         else{changeTextField.textContent = String(diff) + " change since last";}
       })
+      */
+      console.log(previousRating);
+      console.log(stabilityRating);
     
+    localStorage.setItem('storedRating', Number(stabilityRating));
+    const changeTextField = document.getElementById("changeSinceLast");
+    let diff = Math.trunc(10 * (stabilityRating - previousRating)) / 10;
+    if (diff > 0)
+    {
+      changeTextField.textContent = "+" + String(diff) + " change since last";
+    }
+    else{changeTextField.textContent = String(diff) + " change since last";}
+
     // SAVE DATA TO STATE INCIDENTS JSON
     fetch('/state-incidents.json').then(response=>response.json()).then(response2=>
     {
