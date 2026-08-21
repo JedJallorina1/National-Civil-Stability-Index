@@ -328,9 +328,9 @@ function App()
     let params = {currentYear: year};
     let queryString = new URLSearchParams(params).toString();
     // FOR PRODUCTION
-    let url = `https://national-civil-stability-index-production.up.railway.app/retrieveData?${queryString}`;
+    // let url = `https://national-civil-stability-index-production.up.railway.app/retrieveData?${queryString}`;
     // FOR DEV
-    // let url = `/retrieveData?${queryString}`
+    let url = `/retrieveData?${queryString}`
     fetch(url).then(response=>response.json()).then(data=>{
       console.log((data.data));
       setData(data.data);
@@ -403,7 +403,7 @@ function App()
       }
       else
       {
-        setCol("green");
+        setCol("chartreuse");
       }
 
     setCivilStabilityRating(Math.trunc(stabilityRating * 10) / 10);
@@ -433,7 +433,7 @@ function App()
     else{changeTextField.textContent = String(diff) + " change since last";}
 
     // SAVE DATA TO STATE INCIDENTS JSON
-    fetch('/state-incidents.json').then(response=>response.json()).then(response2=>
+    fetch('/public/state-incidents.json').then(response=>response.json()).then(response2=>
     {
       Object.keys(response2).forEach(key=>
       {

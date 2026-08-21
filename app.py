@@ -58,7 +58,7 @@ def get_data():
     parameters = {
         "country": "United States",
         "year": int(year),
-        "fields": "event_id_cnty|event_date|disorder_type|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities|actor1|actor2|tags|notes",
+        "fields": "event_id_cnty|event_date|disorder_type|event_type|sub_event_type|location|admin1|admin2|admin3|longitude|latitude|fatalities|actor1|actor2|tags|notes",
     }
 
     response = requests.get(
@@ -68,6 +68,8 @@ def get_data():
     )
     if response.json()["status"] == 200:
         ## print(response.json())
+        print("RESTRICTIONS: ")
+        print(response.json().get("data_query_restrictions"))
         print(len(response.json()))
         return response.json()
     else:
