@@ -58,7 +58,7 @@ def get_data():
     parameters = {
         "country": "United States",
         "year": int(year),
-        "fields": "event_id_cnty|event_date|disorder_type|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities|notes",
+        "fields": "event_id_cnty|event_date|disorder_type|event_type|sub_event_type|location|admin1|longitude|latitude|fatalities|actor1|actor2|tags|notes",
     }
 
     response = requests.get(

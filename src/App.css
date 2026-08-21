@@ -180,6 +180,7 @@
   background-color: black;
   align-items: left;
   border: solid chartreuse 1px;
+  border-radius: 5px; 
 }
 .about-popup
 {
@@ -192,6 +193,18 @@
   padding: 20px;
   border: solid chartreuse 1px;  
   white-space: pre-line;
+}
+Circle
+{
+  transition: r 0.1s ease, stroke-width 0.1s ease;
+  cursor: pointer;
+}
+Circle:hover
+{
+  r: 8;
+  stroke-width: 8;
+  stroke: chartreuse;
+  fill: chartreuse
 }
 
 /* 1. Target all elements on the page */

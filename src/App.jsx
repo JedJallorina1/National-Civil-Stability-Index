@@ -139,12 +139,14 @@ function MapChart({selectedStateIncidents, mapData, year}) {
           margin:"50px",paddingTop:"100px"}}>
             <h3 style = {{textTransform:  "uppercase"}}>{incident.sub_event_type ?? "None"} in {incident.location ?? "null"} on {incident.event_date}</h3>
             <h4>{incident.notes ?? null}</h4> 
+            <h4>Participants: {incident.actor1}, {incident.actor2}</h4>
+            <h4>Fatalities: {incident.fatalities}</h4>
             <button onClick={() => setSelectedIncident(null)}>Close</button>
         </div>
       )
     }
   
-  const [hoveredIncident, setHoveredIncident] = useState(null);
+  // const [hoveredIncident, setHoveredIncident] = useState(null);
   return (
     <>
     <ComposableMap
@@ -193,40 +195,59 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       </Geographies>
       
       {mapData.map(incident => {
-        let dotColor = "red"
-        let radius = 1
+        let dotColor = "red";
+        let strokeColor = "red";
+        let radius = 1;
         let stroke = 2;
         if (incident.sub_event_type == "Peaceful protest")
         {
           // console.log(incident.disorder_type);
           dotColor = ("red");
+          strokeColor = ("red");
           radius = 1
           stroke = 2;
         }
         else if (incident.sub_event_type == "Protest with intervention" || incident.sub_event_type == "Excessive force against protesters")
         {
           // console.log(incident.disorder_type);
-          dotColor = "darkRed";
+          dotColor = ("darkRed");
+          strokeColor = ("darkRed");
           radius = 2;
           stroke = 4;
         }
         else if (incident.sub_event_type == "Violent demonstration" || incident.sub_event_type == "Mob violence" ||
-          incident.sub_event_type == "Looting/property destruction" || incident.sub_event_type == "Armed clash")
+          incident.sub_event_type == "Looting/property destruction" || incident.sub_event_type == "Armed clash" || 
+          incident.sub_event_type == "Attack")
         {
           // console.log(incident.sub_event_type);
           dotColor = ("maroon");
-          radius = 3;
+          strokeColor = ("maroon");
+          radius = 6  ;
           stroke = 6;
+        }
+        else
+        {
+          dotColor = ("orangeRed");
+          strokeColor = ("orangeRed");
+          radius = 2;
+          stroke = 4;
+        }
+        if (incident.fatalities > 0)
+        {
+          dotColor = ("black")
+          strokeColor = ("maroon");
+          radius = 8;
+          stroke = 4;
         }
         return(
         <Marker onClick={()=>{setSelectedIncident(incident); console.log(selectedIncident)}} key = {incident.event_id_cnty} coordinates = {[Number(incident.longitude), Number(incident.latitude)]}>
         <circle
-        r={hoveredIncident === incident.event_id_cnty ? radius + 3 : radius}
-        fill={hoveredIncident === incident.event_id_cnty ? "chartreuse": dotColor}
-        stroke={hoveredIncident === incident.event_id_cnty ? "chartreuse": dotColor}
-        strokeWidth={hoveredIncident === incident.event_id_cnty ? stroke + 2 : stroke}
-        onMouseEnter={() => setHoveredIncident(incident.event_id_cnty)}
-        onMouseLeave={() => setHoveredIncident(null)}
+        r= {radius}
+        fill={dotColor}
+        stroke={strokeColor}
+        strokeWidth={stroke}
+        // onMouseEnter={() => setHoveredIncident(incident.event_id_cnty)}
+        // onMouseLeave={() => setHoveredIncident(null)}
       />
         </Marker>);
       })}
@@ -308,7 +329,7 @@ function App()
     // FOR DEV
     // let url = `/retrieveData?${queryString}`
     fetch(url).then(response=>response.json()).then(data=>{
-      console.log(data.data);
+      console.log((data.data));
       setData(data.data);
       const peacefulCountTemp = data.data.filter(incident => incident.sub_event_type === "Peaceful protest").length;
       const protestWithInterventionCountTemp = data.data.filter(incident => incident.sub_event_type === "Protest with intervention").length;
@@ -320,6 +341,12 @@ function App()
       const arrestCountTemp = data.data.filter(incident => incident.sub_event_type === "Arrests").length;
       const lootingCountTemp = data.data.filter(incident => incident.sub_event_type === "Looting/property destruction").length;
       const attackCountTemp = data.data.filter(incident => incident.sub_event_type === "Attack").length;
+      const fatalIncidentList = data.data.filter(incident=>incident.fatalities > 0)
+      console.log(fatalIncidentList)
+      const fatalityCountTemp = fatalIncidentList.reduce((accumulator, currentValue, currentIndex) => {return accumulator +  Number(currentValue.fatalities)}, 0);
+      // const fatalityCountTemp = 0;
+      // console.log(fatalityCountTemp);
+      
 
       const politicalViolenceCountTemp = data.data.filter(incident => incident.disorder_type === "Political violence").length;
 
@@ -333,6 +360,7 @@ function App()
       setArrestCount(arrestCountTemp);
       setLootingCount(lootingCountTemp);
       setAttackCount(attackCountTemp);
+      setFatalities(fatalityCountTemp);
 
       setPoliticalViolenceCount(politicalViolenceCountTemp);
 
@@ -343,9 +371,7 @@ function App()
       (excessiveForceWeight * excessiveForceCountTemp) + 
       (violentDemonstrationWeight * violentDemonstrationCountTemp) + 
       (mobViolenceWeight * mobViolenceCountTemp) + 
-      (sexualViolenceWeight*sexualViolenceCountTemp) +
       (arrestsWeight * arrestCountTemp) +
-      (attackWeight * attackCountTemp) +
       (lootingWeight * lootingCountTemp) +
       (politicalViolenceWeight * politicalViolenceCountTemp);
       const averageIncidentIntensity = weightedSeverity / totalIncidentCount;
@@ -456,8 +482,9 @@ function App()
         <div className = "map-highlights-container">
           <h3>{peacefulProtestCount} LAWFUL ASSEMBLIES</h3>
           <h3>{protestWithInterventionCount} UNLAWFUL ASSEMBLIES</h3>
-          <h3>{(violentDemonstrationCount + lootingCount) +  mobViolenceCount} RIOTS</h3>
+          <h3>{(violentDemonstrationCount + lootingCount) +  mobViolenceCount + excessiveForceCount} RIOTS</h3>
           <h3>{politicalViolenceCount} POLITICAL VIOLENCE INCIDENTS</h3>
+          <h3> {fatalities} CIVIL INCIDENT FATALITIES</h3>
         </div>
       </div>
 
