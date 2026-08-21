@@ -288,7 +288,7 @@ function App()
   const peacefulProtestWeight = 0.01;
   const protestWithInterventionWeight = 0.2;
   const excessiveForceWeight = 0.5;
-  const violentDemonstrationWeight = 1.0;
+  const violentDemonstrationWeight = 1.5;
   const mobViolenceWeight = 1.75;
 
   const sexualViolenceWeight = 1.0;
@@ -300,7 +300,7 @@ function App()
 
 
   const daysElapsed = 365;
-  const scalingFactor = 1.0;
+  const scalingFactor = 1.10;
 
   // RATING COLORS
   const [col, setCol] = useState("chartreuse");
@@ -328,9 +328,9 @@ function App()
     let params = {currentYear: year};
     let queryString = new URLSearchParams(params).toString();
     // FOR PRODUCTION
-    // let url = `https://national-civil-stability-index-production.up.railway.app/retrieveData?${queryString}`;
+    let url = `https://national-civil-stability-index-production.up.railway.app/retrieveData?${queryString}`;
     // FOR DEV
-    let url = `/retrieveData?${queryString}`
+    // let url = `/retrieveData?${queryString}`
     fetch(url).then(response=>response.json()).then(data=>{
       console.log((data.data));
       setData(data.data);
@@ -373,7 +373,7 @@ function App()
       (protestWithInterventionWeight*protestWithInterventionCountTemp) +
       (excessiveForceWeight * excessiveForceCountTemp) + 
       (violentDemonstrationWeight * violentDemonstrationCountTemp) + 
-      (mobViolenceWeight * mobViolenceCountTemp) + 
+      // (mobViolenceWeight * mobViolenceCountTemp) + 
       (arrestsWeight * arrestCountTemp) +
       (lootingWeight * lootingCountTemp) +
       (politicalViolenceWeight * politicalViolenceCountTemp);
@@ -433,7 +433,7 @@ function App()
     else{changeTextField.textContent = String(diff) + " change since last";}
 
     // SAVE DATA TO STATE INCIDENTS JSON
-    fetch('/public/state-incidents.json').then(response=>response.json()).then(response2=>
+    fetch('/state-incidents.json').then(response=>response.json()).then(response2=>
     {
       Object.keys(response2).forEach(key=>
       {
