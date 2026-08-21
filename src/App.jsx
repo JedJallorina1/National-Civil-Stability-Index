@@ -96,7 +96,7 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       {
         displayStateInfoBox = "flex";
       }
-      const stateFatalIncidentList = selectedStateIncidents[selectedState].filter(incident=>incident.fatalities > 0)
+      const stateFatalIncidentList = selectedStateIncidents[selectedState]?.filter(incident=>incident.fatalities > 0) ?? [];
       const stateFatalityCountTemp = stateFatalIncidentList.reduce((accumulator, currentValue, currentIndex) => {return accumulator +  Number(currentValue.fatalities)}, 0);
 
       return(
