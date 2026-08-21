@@ -96,7 +96,9 @@ function MapChart({selectedStateIncidents, mapData, year}) {
       {
         displayStateInfoBox = "flex";
       }
-      
+      const stateFatalIncidentList = selectedStateIncidents[selectedState].filter(incident=>incident.fatalities > 0)
+      const stateFatalityCountTemp = stateFatalIncidentList.reduce((accumulator, currentValue, currentIndex) => {return accumulator +  Number(currentValue.fatalities)}, 0);
+
       return(
       <>
         <div className = "stateInfoBox" style = {{
@@ -109,6 +111,7 @@ function MapChart({selectedStateIncidents, mapData, year}) {
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Protest with intervention").length ?? 0} UNLAWFUL ASSEMBLIES</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.sub_event_type === "Violent demonstration" || incident.sub_event_type === "Mob violence").length ?? 0} RIOTS</h4>
             <h4> {selectedStateIncidents[selectedState]?.filter(incident => incident.disorder_type === "Political violence").length ?? 0} POLITICAL VIOLENCE INCIDENTS</h4> 
+            <h4> {stateFatalityCountTemp} CIVIL INCIDENT FATALITIES</h4>   
             <button onClick={() => setSelectedState(null)}>Close</button>
         </div>
       </>
